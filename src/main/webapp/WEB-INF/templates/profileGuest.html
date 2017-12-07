@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <title>MyBlog</title>
+</head>
+<body>
+<div class="profile-container panel-major">
+    <div class="profile-container-avatar">
+        <img src="../../resources/img/defaultAvatar.png">
+    </div>
+    <div class="profile-container-info">
+        <div class="ns-title ns-bold"> Sabera</div>
+        <div class="ns-major"> Санны луани</div>
+        <form>
+            <input type="submit" value="Подписаться" class="input-button-short  bgcolor-dark-blue">
+        </form>
+    </div>
+</div>
+
+<div class="new-post-container panel-major">
+    <form>
+        <input type="text" class="input-text new-post-input-title">
+        <textarea class="input-text new-post-input-content" maxlength="4000"></textarea>
+        <input type="submit" class="input-button-short new-post-input-submit bgcolor-blue textcolor-white "
+               placeholder="Отправить">
+    </form>
+</div>
+<div class="posts-container">
+    <div class="post-container panel-major">
+        <div class="post-header">
+            <div class="post-author-avatar"><img src="../../resources/img/defaultAvatar.png"></div>
+            <div class="post-author-name ns-major">Sabera</div>
+        </div>
+        <div class="repost-container">
+            <div class="post-header">
+                <div class="post-author-avatar"><img src="../../resources/img/defaultAvatar.png"></div>
+                <div class="post-author-name ns-major">Luasina</div>
+            </div>
+            <div class="post-title ns-title">Чмо!</div>
+            <div class="repost-content ns-text">Чтоб подохли вы потуги натужные! Не узреть вам пыла в крови! И не спать
+                вам
+                литр
+                пони! Да и допизды что там считают, сегодня на тебя собаки лают, но а завтры ты - упырь, упадёшь еблом
+                на
+                штырь!
+                Ха ха, ха ха, я буду ржать, а ты дырой фонтан пускать!
+            </div>
+        </div>
+        <div class="post-footer">
+            <div class="post-date ns-text"><a href="#">20.11.2017 13:51</a></div>
+            <div class="post-repost ns-text"><a href="#">Репост</a></div>
+            <div class="post-like ns-text non-liked"><a href="#">Лайк</a></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="subs-container panel-major" th:if="${activeUser.getSubscriptions().isEmpty()}">
+    <div class="sub-container">
+        У вас нету подписок. Подпишитесь на кого-нибудь! Вы всегда можете отписаться в этом меню)
+    </div>
+</div>
+<div class="subs-container panel-major " th:each="sub:${activeUser.getSubscriptions()}">
+    <div class="sub-container" th:if="${(sub.getFirstName()==null) && (sub.getLastName() == null)}">
+        <div class="sub-info">
+            <div class="sub-avatar">
+                <img th:src="${sub.getAvatarImagePath()}">
+            </div>
+            <div class="sub-username ns-major">
+                <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+            </div>
+        </div>
+        <div class="sub-unsubscribe">
+            <a href="#!" th:onclick="'toggleSub(' + ${sub.getUserInfoId()}+')'"> Unsubscribe</a>
+        </div>
+    </div>
+    <div class="sub-container" th:if="${(sub.getFirstName()!=null)&&(sub.getLastName()!=null)}">
+        <div class="sub-info">
+            <div class="sub-avatar">
+                <img th:src="${sub.getAvatarImagePath()}">
+            </div>
+            <div class="sub-names">
+                <div class="sub-username ns-major">
+                    <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                </div>
+                <div class="sub-name ns-minor" th:text="${sub.getFirstName()}+' '+${sub.getLastName()}">
+                </div>
+            </div>
+        </div>
+        <div class="sub-unsubscribe">
+            <a href="#!" th:onclick="'toggleSub(' + ${sub.getUserInfoId()}+')'"> Unsubscribe</a>
+        </div>
+    </div>
+</div>
+
+
+<div id="subscribers" class="hide">
+    <div class="subs-container panel-major" th:if="${activeUser.getSubscribers().isEmpty()}">
+        <div class="sub-container">
+            У вас нету подписчиков. Пусть на вас подпишится кого-нибудь! А вы можете подписаться в ответ!
+        </div>
+    </div>
+    <div class="subs-container panel-major" th:each="sub:${activeUser.getSubscribers()}">
+        <div class="sub-container" th:if="${(sub.getFirstName()==null) && (sub.getLastName() == null)}">
+            <div class="sub-info">
+                <div class="sub-avatar">
+                    <img th:src="${sub.getAvatarImagePath()}">
+                </div>
+                <div class="sub-username ns-major">
+                    <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                </div>
+            </div>
+            <div class="sub-subscribe">
+                <a href="#!" th:onclick="'toggleSub(' + ${sub.getUserInfoId()}+')'"> Subscribe</a>
+            </div>
+        </div>
+        <div class="sub-container" th:if="${(sub.getFirstName()!=null)&&(sub.getLastName()!=null)}">
+            <div class="sub-info">
+                <div class="sub-avatar">
+                    <img th:src="${sub.getAvatarImagePath()}">
+                </div>
+                <div class="sub-names">
+                    <div class="sub-username ns-major">
+                        <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                    </div>
+                    <div class="sub-name ns-minor" th:text="${sub.getFirstName()}+' '+${sub.getLastName()}">
+                    </div>
+                </div>
+            </div>
+            <div class="sub-subscribe">
+                <a href="#!" th:onclick="'toggleSub(' + ${sub.getUserInfoId()}+')'"> Subscribe</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="language-settings">
+    <div class="cap panel-major">Изменить язык</div>
+    <div class="settings-language-body panel-major">
+        <div class="language-selector">
+            <div class="ns-major">Язык</div>
+            <select class="select">
+                <option>Русский</option>
+                <option>English</option>
+            </select>
+        </div>
+        <div class="language-settings-submit">
+            <input type="submit" class="input-button-short bgcolor-green textcolor-white" value="Сохранить">
+        </div>
+    </div>
+</div>
+</body>
+</html>

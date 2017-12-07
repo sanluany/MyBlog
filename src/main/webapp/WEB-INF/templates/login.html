@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <title>MyBlog</title>
+</head>
+<body>
+<div class="main-container">
+    <div class="login-container panel-major">
+        <form action="#" th:action="@{/login}" th:object="${user}" method="post">
+            <div class="login-title ns-title textcolor-blue" th:utext="#{Text.Login.LogIn}"></div>
+            <input type="text" class="input-text login-input" th:placeholder="#{Placeholder.User.Username}"
+                   th:field="*{username}">
+            <input type="password" class="input-text login-input" th:placeholder="#{Placeholder.User.Password}"
+                   th:field="*{password}">
+            <label id="loginCheckboxLabel" for="remember_me">
+                <input type="checkbox" id="remember_me" name="remember-me" class="input-checkbox login-checkbox"><span
+                    class="checkbox-span" th:utext="#{Text.Login.RememberMe}"></span>
+            </label>
+            <div class="err err-register ns-minor" th:if="${error}" th:text="#{Error.User.Login}">
+
+            </div>
+            <div class="no-err err-register ns-minor" th:if="${successLogout}" th:text="#{Success.User.Logout}">
+
+            </div>
+            <input type="submit" class="input-button login-input bgcolor-blue textcolor-white" th:value="#{Text.Login.Submit}">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        </form>
+    </div>
+    <div class="login-footer-container panel-minor">
+        <div class="login-footer ns-minor">
+            <div class=" login-footer-text" th:utext="#{Text.Login.NoAccount}"></div>
+            <div><a th:href="@{/register}" th:utext="#{Text.Login.Register}"></a></div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

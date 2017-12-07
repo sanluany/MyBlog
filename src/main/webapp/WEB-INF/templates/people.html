@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <script src="../../resources/js/blog.js" th:src="@{/resources/js/blog.js}"></script>
+    <title>Subscribers</title>
+</head>
+<body>
+<div th:replace="fragments/header :: main-header (username = ${activeUser.getUsername()})"></div>
+<div class="vertical-menu ns-major">
+    <a id="menu-subscriptions" class="chosen" href="#!" onclick="toggleSubsMenu(event)" th:utext="#{Text.People.Subscriptions}"></a>
+    <a id="menu-subscribers" href="#!" onclick="toggleSubsMenu(event)" th:utext="#{Text.People.Subscribers}"></a>
+</div>
+
+<div id="subMenu">
+   <div th:replace="fragments/dynamicFragments :: subscriptionsMenu"></div>
+</div>
+
+</body>
+</html>

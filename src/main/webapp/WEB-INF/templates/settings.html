@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <script src="../../resources/js/jquery-3.2.1.min.js" th:src="@{/resources/js/jquery-3.2.1.min.js}"></script>
+    <title>Settings</title>
+</head>
+<body>
+<div th:replace="fragments/header :: main-header (username = ${activeUserInfo.getUsername()})"></div>
+<div class="vertical-menu ns-major">
+    <a id="menu-profile" class="chosen" href="#!" onclick="toggleSettingsMenu(event)" th:utext="#{Text.Settings.Profile}"></a>
+    <a id="menu-security" href="#!" onclick="toggleSettingsMenu(event)" th:utext="#{Text.Settings.Security}"></a>
+</div>
+<div id="settings" class="settings">
+    <div th:case="${#bools.isTrue(showProfile)}" th:replace="fragments/dynamicFragments :: profileSettings" ></div>
+</div>
+<!-- <script  src="../../resources/js/imageLoader.js" th:src="@{/resources/js/imageLoader.js}"></script> -->
+<script src="../../resources/js/blog.js" th:src="@{/resources/js/blog.js}"></script>
+</body>
+</html>

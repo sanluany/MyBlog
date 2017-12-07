@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <script src="../../resources/js/blog.js" th:src="@{/resources/js/blog.js}"></script>
+    <title>Feed</title>
+</head>
+<body>
+<div th:replace="fragments/header :: main-header (username = ${activeUser.getUsername()})"></div>
+<div class="feed-container">
+    <div class="subs-container panel-major ns-minor" th:if="${feed == null}">
+        <div class="sub-container" th:utext="#{Message.Feed.NoFeed}"></div>
+    </div>
+    <div class="posts-container" th:each="post :${feed}">
+        <div class="post-container panel-major">
+            <div class="post-header">
+                <div class="post-author-avatar"><img th:src="${post.getAuthorImagePath()}"></div>
+                <div class="post-author-name ns-major" ><a
+                        th:href="@{/{username} (username=${post.getAuthor()})}" th:text="${post.getAuthor()}"></a>
+                </div>
+            </div>
+
+            <div class="repost-container" th:if="${post.isRepost()}"
+                 th:object=" ${post.getOriginalAuthor().setRepostById(post.getRepostedId())}">
+                <div class="post-header">
+                    <div class="post-header-left">
+                        <div class="post-author-avatar"><img
+                                th:src="${post.getOriginalAuthor().getRepost().getAuthorImagePath()}"></div>
+                        <div class="post-author-name ns-major"><a
+                                th:href="@{/{username} (username=${post.getOriginalAuthor().getRepost().getAuthor()})}"
+                                th:text="${post.getOriginalAuthor().getRepost().getAuthor()}"></a></div>
+                    </div>
+                </div>
+                <div class="post-title ns-major"
+                     th:if="${post.getOriginalAuthor().getRepost().getTitle() !=null}"
+                     th:text="${post.getOriginalAuthor().getRepost().getTitle()}"></div>
+                <div class="post-content ns-text" th:text="${post.getOriginalAuthor().getRepost().getContent()}"></div>
+            </div>
+
+            <div th:if="${!post.isRepost()}">
+                <div class="post-title ns-major" th:if="${post.getTitle()!=null}"
+                     th:text="${post.getTitle()}"></div>
+                <div class="post-content ns-text" th:text="${post.getContent()}"></div>
+            </div>
+
+            <div class="post-footer">
+                <div class="post-date ns-text"><a href="#" th:text="${post.getDateAsString()}"></a></div>
+                <div class="post-repost ns-text"
+                     th:classappend="${post.getReposts().contains(activeUser)} ? 'reposted' : 'non-reposted' "
+                     th:id="'repostBtn'+${post.getPostId()}"><a href="#!"
+                                                                th:onclick="'toggleRepost(' + ${post.getPostId()}+')'">
+                    <span th:utext="#{Text.Profile.Repost}"></span>
+                    <span th:id="'repostBtnSpan'+${post.getPostId()}" th:text="${post.getReposts().size()}"></span>
+                </a></div>
+                <div class="post-like ns-text"
+                     th:classappend="${post.getLikes().contains(activeUser)} ? 'liked' : 'non-liked' "
+                     th:id="'likeBtn'+${post.getPostId()}"><a href="#!"
+                                                              th:onclick="'toggleLike('+${post.getPostId()}+')'">
+                    <span th:utext="#{Text.Profile.Like}"></span>
+                    <span th:id="'likeBtnSpan'+${post.getPostId()}" th:text="${post.getLikes().size()}"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

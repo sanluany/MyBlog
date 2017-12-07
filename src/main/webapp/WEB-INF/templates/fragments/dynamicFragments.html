@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="subscriptionsMenu" th:fragment="subscriptionsMenu">
+    <div class="subs-container panel-major ns-minor" th:if="${activeUser.getSubscriptions().isEmpty()}">
+        <div class="sub-container" th:utext="#{Message.People.NoSubscriptions}"></div>
+    </div>
+    <div class="subs-container panel-major " th:each="sub:${activeUser.getSubscriptions()}">
+        <div class="sub-container" th:if="${(sub.getFirstName()==null) && (sub.getLastName() == null)}">
+            <div class="sub-info">
+                <div class="sub-avatar">
+                    <img th:src="${sub.getAvatarImagePath()}">
+                </div>
+                <div class="sub-username ns-major">
+                    <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                </div>
+            </div>
+            <div class="sub-unsubscribe">
+                <a href="#!" th:onclick="'unsubscribeMenu(' + ${sub.getUserInfoId()}+')'" th:utext="#{Button.Unsubscribe}"></a>
+            </div>
+        </div>
+        <div class="sub-container" th:if="${(sub.getFirstName()!=null)&&(sub.getLastName()!=null)}">
+            <div class="sub-info">
+                <div class="sub-avatar">
+                    <img th:src="${sub.getAvatarImagePath()}">
+                </div>
+                <div class="sub-names">
+                    <div class="sub-username ns-major">
+                        <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                    </div>
+                    <div class="sub-name ns-minor" th:text="${sub.getFirstName()}+' '+${sub.getLastName()}">
+                    </div>
+                </div>
+            </div>
+            <div class="sub-unsubscribe">
+                <a href="#!" th:onclick="'unsubscribeMenu(' + ${sub.getUserInfoId()}+')'" th:utext="#{Button.Unsubscribe}"> </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="subscribersMenu">
+    <div class="subs-container panel-major ns-minor" th:if="${activeUser.getSubscribers().isEmpty()}">
+        <div class="sub-container" th:utext="#{Message.People.NoSubscribers}"></div>
+    </div>
+    <div class="subs-container panel-major" th:each="sub:${activeUser.getSubscribers()}">
+        <div class="sub-container" th:if="${(sub.getFirstName()==null) && (sub.getLastName() == null)}">
+            <div class="sub-info">
+                <div class="sub-avatar">
+                    <img th:src="${sub.getAvatarImagePath()}">
+                </div>
+                <div class="sub-username ns-major">
+                    <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                </div>
+            </div>
+            <div class="sub-subscribe" th:if="${!activeUser.getSubscriptions().contains(sub)}">
+                <a href="#!" th:onclick="'unsubscribeMenu(' + ${sub.getUserInfoId()}+')'" th:utext="#{Button.Subscribe}"> </a>
+            </div>
+            <div class="sub-unsubscribe" th:if="${activeUser.getSubscriptions().contains(sub)}">
+                <a href="#!" th:onclick="'unsubscribeMenu(' + ${sub.getUserInfoId()}+')'" th:utext="#{Button.Unsubscribe}"> </a>
+            </div>
+        </div>
+        <div class="sub-container" th:if="${(sub.getFirstName()!=null)&&(sub.getLastName()!=null)}">
+            <div class="sub-info">
+                <div class="sub-avatar">
+                    <img th:src="${sub.getAvatarImagePath()}">
+                </div>
+                <div class="sub-names">
+                    <div class="sub-username ns-major">
+                        <a th:text="${sub.getUsername()}" th:href="@{/{username} (username=${sub.getUsername()})}"></a>
+                    </div>
+                    <div class="sub-name ns-minor" th:text="${sub.getFirstName()}+' '+${sub.getLastName()}">
+                    </div>
+                </div>
+            </div>
+            <div class="sub-subscribe" th:if="${!activeUser.getSubscriptions().contains(sub)}">
+                <a href="#!" th:onclick="'unsubscribeMenu(' + ${sub.getUserInfoId()}+')'" th:utext="#{Button.Subscribe}"> </a>
+            </div>
+            <div class="sub-unsubscribe" th:if="${activeUser.getSubscriptions().contains(sub)}">
+                <a href="#!" th:onclick="'unsubscribeMenu(' + ${sub.getUserInfoId()}+')'" th:utext="#{Button.Unsubscribe}"> </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="profileSettings">
+    <div class="name-settings">
+        <div class="cap panel-major" th:utext="#{Title.Settings.ChangeName}"></div>
+        <div class="settings-name-body panel-major">
+            <div class="change-name">
+                <div class="ns-major" th:utext="#{Title.Settings.FirstName}"></div>
+                <input class="input-text" id="firstName">
+            </div>
+            <div class="change-name">
+                <div class="ns-major" th:utext="#{Text.Settings.LastName}"></div>
+                <input class="input-text" id="lastName">
+            </div>
+            <div class="change-name-submit" id="changeNameSubmit">
+                <input type="submit" class="input-button-short bgcolor-green textcolor-white" th:value="#{Text.Button.Save}"
+                       onclick="doChangeName()">
+            </div>
+        </div>
+    </div>
+    <div class="avatar-settings">
+        <div class="cap panel-major" th:utext="#{Title.Settings.ChangeImage}"></div>
+        <div class="settings-container panel-major">
+            <div class="settings-avatar-header">
+                <label for="fileUpload" class="bgcolor-blue textcolor-white ns-text" th:utext="#{Text.Settings.SelectFile}"></label>
+                <input type="file" id="fileUpload" accept="image/jpeg, image/png"
+                       style="display: none"/>
+            </div>
+            <div class="settings-profile-body">
+                <div class="image-crop-source-container">
+                    <div class="image-crop-source">
+                        <div class="ns-major" th:utext="#{Text.Settings.CropImage}"></div>
+                        <canvas width="250" height="250" id="canvas"></canvas>
+                        <input id='scaleSlider' class="slider" type='range' min='0.2' max='2.0' step='0.01'
+                               value='1.0'/>
+                    </div>
+
+                </div>
+                <div class="image-crop-result-container">
+                    <div class="image-crop-result-main">
+                        <div class="ns-major" th:utext="#{Text.Settings.ImagePreview}"></div>
+                        <img id="canvasResult"/>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-profile-footer">
+                <form action="#" th:action="@{/settings}" name="form1" method="post">
+                    <input id="sendFile" name="image" style="display: none"/>
+                    <button onclick="sendData()" class="input-button-short bgcolor-blue textcolor-white" th:utext="#{Button.Submit}">
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="language-settings">
+        <div class="cap panel-major" th:utext="#{Title.Settings.ChangeLang}"></div>
+        <div class="settings-language-body panel-major">
+            <div class="language-selector">
+                <div class="ns-major" th:utext="#{Text.Settings.Language}"></div>
+                <select class="select" id="lang-selector">
+                    <option>Русский</option>
+                    <option>English</option>
+                </select>
+            </div>
+            <div class="language-settings-submit">
+                <input type="submit" class="input-button-short bgcolor-green textcolor-white" onclick="doChangeLanguage()" th:value="#{Text.Button.Save}">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function el(id) {
+            return document.getElementById(id);
+        } // Get elem by ID
+
+        var ctx = el("canvas").getContext("2d");
+        var baseX = 0;
+        var baseY = 0;
+        var lastPointX = 0;
+        var lastPointY = 0;
+        var scale = 1;
+        var lastScale = 1;
+        var maxX = 0;
+        var maxY = 0;
+        var cutoutWidth = 40;
+        var image = new Image();
+        var click = false;
+        var windowWidth = 170;
+        var vData = null;
+
+        function init() {
+            image.src = "../../resources/img/defaultAvatar.png";
+            image.addEventListener("load", function () {
+                drawImage(0, 0);
+            });
+        }
+
+        function readImage() {
+            if (this.files && this.files[0]) {
+                var FR = new FileReader();
+                FR.onload = function (e) {
+                    var img = new Image();
+                    img.addEventListener("load", function () {
+                        ctx.drawImage(img, 0, 0);
+                    });
+                    img.src = e.target.result;
+                    image.src = e.target.result;
+                    scale = 1;
+                    lastScale = 1;
+                    el("scaleSlider").value = 1;
+                };
+                FR.readAsDataURL(this.files[0]);
+            }
+            el("canvas").style.display = "inline";
+            minScale();
+        }
+
+        function minScale() {
+            var minScaleX = (210 - baseX) / maxX;
+            var minScaleY = (210 - baseY) / maxY;
+            console.log("minScaleX=" + minScaleX + "| minScaleY=" + minScaleY);
+        }
+        function drawImage(x, y) {
+            var width = ctx.canvas.width;
+            var height = ctx.canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            baseX = baseX + (x - lastPointX);
+            baseY = baseY + (y - lastPointY);
+            console.log("baseX=" + baseX + "||baseY=" + baseY);
+            maxY = image.height;
+            maxX = image.width;
+            console.log("maxBaseX=" + (210 - maxX * scale) + "||maxBaseY=" + (210 - maxY * scale));
+            if (baseX > 40) {
+                baseX = 40;
+            }
+            if (baseY > 40) {
+                baseY = 40;
+            }
+            if (baseX < (210 - maxX * scale)) {
+                baseX = 210 - maxX * scale;
+            }
+            if (baseY < (210 - maxY * scale)) {
+                baseY = 210 - maxY * scale;
+            }
+            lastPointX = x;
+            lastPointY = y;
+            ctx.drawImage(image, baseX, baseY, Math.floor(image.width * scale), Math.floor(image.height * scale));
+            drawCutout();
+            showCropedImage();
+        }
+
+        function drawCutout() {
+            var canvas = el("canvas");
+            ctx.fillStyle = "rgba(0,0,0,0.65)";
+            /*
+             ctx.beginPath();
+             ctx.arc(canvas.height / 2, canvas.width / 2, 85, 0, 2 * Math.PI, false);
+             ctx.rect(250, 0, -250, 250);
+             ctx.lineWidth = 3;
+             ctx.strokeStyle = "#ffffff";
+             ctx.stroke();
+             */
+            ctx.beginPath();
+
+            ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.moveTo(cutoutWidth, cutoutWidth);
+            ctx.lineTo(cutoutWidth, windowWidth + cutoutWidth);
+            ctx.lineTo(cutoutWidth + windowWidth, cutoutWidth + windowWidth);
+            ctx.lineTo(cutoutWidth + windowWidth, cutoutWidth);
+            ctx.closePath();
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#ffffff";
+            ctx.stroke();
+        }
+        function onMouseDown(e) {
+            e.preventDefault();
+            var loc = windowToCanvas(e.clientX, e.clientY);
+            click = true;
+            lastPointX = loc.x;
+            lastPointY = loc.y;
+        }
+
+        function onMouseMove(e) {
+            e.preventDefault();
+            if (click) {
+                var loc = windowToCanvas(e.clientX, e.clientY);
+                drawImage(loc.x, loc.y);
+
+            }
+        }
+
+        function onMouseUp(e) {
+            e.preventDefault();
+            click = false;
+        }
+
+        function windowToCanvas(x, y) {
+            var canvas = ctx.canvas;
+            var bbox = canvas.getBoundingClientRect();
+            return {
+                x: x - bbox.left * (canvas.width / bbox.width),
+                y: y - bbox.top * (canvas.height / bbox.height)
+            };
+        }
+
+        function showCropedImage() {
+            var temp_context, temp_canvas;
+            temp_canvas = document.createElement("canvas");
+            temp_context = temp_canvas.getContext("2d");
+            temp_canvas.width = windowWidth;
+            temp_canvas.height = windowWidth;
+            temp_context.drawImage(ctx.canvas, cutoutWidth, cutoutWidth, windowWidth, windowWidth, 0, 0, windowWidth, windowWidth);
+            vData = temp_canvas.toDataURL();
+            el("canvasResult").src = vData;
+            el("canvasResult").style.display = "inline";
+
+        }
+
+        function sendData() {
+            document.getElementById('sendFile').value = vData;
+            document.forms["form1"].submit();
+        }
+        function updateScale(e) {
+
+            scale = e.target.value;
+            if (baseX < (210 - maxX * scale) || baseY < (210 - maxY * scale)) {
+                if (baseX > 40 || baseY > 40) {
+                    scale = lastScale;
+                    e.target.value = lastScale;
+                    console.log("must be 40");
+                } else {
+                    baseX = baseX + 1;
+                    baseY = baseY + 1;
+                    lastScale = scale;
+                }
+            } else {
+                lastScale = scale;
+            }
+            console.log("scale=" + scale + "|| lastScale=" + lastScale);
+            drawImage(lastPointX, lastPointY);
+        }
+
+        el("canvas").addEventListener("mousedown", onMouseDown, false);
+        el("canvas").addEventListener("mousemove", onMouseMove, false);
+        el("canvas").addEventListener("mouseup", onMouseUp, false);
+        el("scaleSlider").addEventListener("input", updateScale, false);
+        el("fileUpload").addEventListener("change", readImage, false);
+        init();
+    </script>
+</div>
+
+<div th:fragment="securitySettings">
+    <div class="password-settings">
+        <div class="cap panel-major" th:utext="#{Title.Settings.ChangePass}"></div>
+        <div class="settings-password-body panel-major">
+            <form id="passChangeForm">
+                <div class="change-password">
+                    <div class="ns-major" th:utext="#{Text.Settings.PrevPass}"></div>
+                    <input class="input-text" id="previousPassword" type="password">
+                </div>
+                <div class="change-password">
+                    <div class="ns-major" th:utext="#{Text.Settings.NewPass}"></div>
+                    <input class="input-text" id="newPassword" type="password">
+                </div>
+                <div class="change-password">
+                    <div class="ns-major" th:utext="#{Text.Settings.PassConf}"></div>
+                    <input class="input-text" id="passwordConfirmation" type="password">
+                </div>
+                <div class="change-name-submit" id="change-name-submit">
+                    <input type="submit" class="input-button-short bgcolor-green textcolor-white" th:value="#{Text.Button.Save}">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="message" th:switch="${isError}" id="message">
+    <div th:case="true" class="err err-register" th:text="${msg}"></div>
+    <div th:case="false" class="no-err err-register" th:text="${msg}"></div>
+</div>
+</body>
+</html>

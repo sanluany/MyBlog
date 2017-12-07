@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../../resources/css/style.css"
+          th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <title>ff</title>
+</head>
+<body>
+<div class="main-header header-container" th:fragment="main-header (username)">
+    <a href="#" id="goHome" th:text="${username}" th:href="@{/{username} (username=${username})}"></a>
+    <a href="#" id="goFeed" th:href="@{/feed}" th:utext="#{Text.Header.Feed}"></a>
+    <a href="#" id="goSubs" th:href="@{/subscriptions}" th:utext="#{Text.Header.People}"></a>
+    <a href="#" id="goSettings" th:href="@{/settings}" th:utext="#{Text.Header.Settings}"></a>
+    <a href="#" id="goLogout" onclick="document.getElementById('logoutForm').submit()" th:utext="#{Text.Header.Logout}"></a>
+    <form id="logoutForm" action="#"  th:action="@{/logout}" method="post">
+    </form>
+</div>
+
+</body>
+</html>

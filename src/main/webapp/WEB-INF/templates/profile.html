@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <script src="../../resources/js/jquery-3.2.1.min.js" th:src="@{/resources/js/jquery-3.2.1.min.js}"></script>
+    <script src="../../resources/js/blog.js" th:src="@{/resources/js/blog.js}"></script>
+    <title>MyBlog</title>
+</head>
+<body>
+<div th:replace="fragments/header :: main-header (username = ${activeUser.getUsername()})"></div>
+<div th:switch="${user_role}">
+    <div th:case="'owner'">
+        <div class="profile-container panel-major">
+            <div class="profile-container-avatar">
+                <img th:src="${activeUser.getAvatarImagePath()}">
+            </div>
+            <div class="profile-container-info">
+                <div class="ns-major ns-bold" th:text="${activeUser.getUsername()}"></div>
+                <div th:if="${activeUser.getFirstName() !=null }"
+                     th:text="${activeUser.getFirstName()} + ' '+ ${activeUser.getLastName()}" class="ns-major"></div>
+
+            </div>
+        </div>
+        <div class="new-post-container panel-major">
+            <form action="#" th:action="@{/{username}(username=${activeUser.getUsername()})}" th:object="${newPost}"
+                  method="post">
+                <input type="text" th:field="*{title}" class="input-text new-post-input-title" th:placeholder="#{Placeholder.Post.Title}">
+                <textarea th:field="*{content}" class="input-text new-post-input-content" maxlength="4000" th:placeholder="#{Placeholder.Post.Content}"></textarea>
+                <input type="submit" class="input-button-short new-post-input-submit bgcolor-blue textcolor-white"
+                       th:value="#{Text.Profile.Send}">
+            </form>
+        </div>
+
+
+        <div class="posts-container" th:each="post :${posts}">
+            <div class="post-container panel-major" th:id="'post'+${post.getPostId()}">
+                <div class="post-header">
+                    <div class="post-header-left">
+                        <div class="post-author-avatar"><img th:src="${post.getAuthorImagePath()}"></div>
+                        <div class="post-author-name ns-major"><a
+                                th:href="@{/{username} (username=${post.getAuthor()})}"
+                                th:text="${post.getAuthor()}"></a></div>
+                    </div>
+                    <div class="post-header-right">
+                        <div class="post-remove"><a href="#!" th:onclick="'removePost('+${post.getPostId()}+')'"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="repost-container" th:if="${post.isRepost()}"
+                     th:object="${activeUser.setRepostById(post.getRepostedId())}">
+                    <div class="post-header">
+                        <div class="post-header-left">
+                            <div class="post-author-avatar"><img
+                                    th:src="${activeUser.getRepost().getAuthorImagePath()}"></div>
+                            <div class="post-author-name ns-major"><a
+                                    th:href="@{/{username} (username=${activeUser.getRepost().getAuthor()})}"
+                                    th:text="${activeUser.getRepost().getAuthor()}"></a></div>
+                        </div>
+                    </div>
+                    <div class="post-title ns-major"
+                         th:if="${activeUser.getRepost().getTitle() !=null}"
+                         th:text="${activeUser.getRepost().getTitle()}"></div>
+                    <div class="post-content ns-text" th:text="${activeUser.getRepost().getContent()}"></div>
+                </div>
+
+                <div th:if="${!post.isRepost()}">
+                    <div class="post-title ns-major" th:if="${post.getTitle()!=null}"
+                         th:text="${post.getTitle()}"></div>
+                    <div class="post-content ns-text" th:text="${post.getContent()}"></div>
+                </div>
+
+                <div class="post-footer">
+                    <div class="post-date ns-text"><a href="#" th:text="${post.getDateAsString()}"></a></div>
+                    <div class="post-like ns-text"
+                         th:classappend="${post.getLikes().contains(activeUser)} ? 'liked' : 'non-liked' "
+                         th:id="'likeBtn'+${post.getPostId()}"><a href="#!"
+                                                                  th:onclick="'toggleLike('+${post.getPostId()}+')'">
+                        <span th:utext="#{Text.Profile.Like}"></span>
+                        <span th:id="'likeBtnSpan'+${post.getPostId()}" th:text="${post.getLikes().size()}"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div th:case="'guest'">
+        <div class="profile-container panel-major">
+            <div class="profile-container-avatar">
+                <img th:src="${passiveUser.getAvatarImagePath()}">
+            </div>
+            <div class="profile-container-info">
+                <div class="ns-major ns-bold" th:text="${passiveUser.getUsername()}"></div>
+                <div th:if="${passiveUser.getFirstName() !=null}"
+                     th:text="${passiveUser.getFirstName()} + ' '+ ${passiveUser.getLastName()}" class="ns-major"></div>
+
+                <input type="submit"
+                       th:classappend="${activeUser.isSubscribed(passiveUser)} ? 'bgcolor-dark-blue': 'bgcolor-blue'"
+                       th:value="${activeUser.isSubscribed(passiveUser)}? #{Text.Profile.Unsubscribe} : #{Text.Profile.Subscribe}"
+                       class="input-button-short subBtn textcolor-white" id="subscribeProfileBtn" th:onclick="'toggleSubProfile(' + ${passiveUser.getUserInfoId()}+')'" >
+            </div>
+        </div>
+        <div class="posts-container" th:each="post :${posts}">
+            <div class="post-container panel-major">
+                <div class="post-header">
+                    <div class="post-author-avatar"><img th:src="${post.getAuthorImagePath()}"></div>
+                    <div class="post-author-name ns-major" th:text="${post.getAuthor()}"><a
+                            th:href="@{/{username} (username=${post.getAuthor()})}" th:text="${post.getAuthor()}"></a>
+                    </div>
+                </div>
+
+                <div class="repost-container" th:if="${post.isRepost()}"
+                     th:object="${passiveUser.setRepostById(post.getRepostedId())}">
+                    <div class="post-header">
+                        <div class="post-header-left">
+                            <div class="post-author-avatar"><img
+                                    th:src="${passiveUser.getRepost().getAuthorImagePath()}"></div>
+                            <div class="post-author-name ns-major"><a
+                                    th:href="@{/{username} (username=${passiveUser.getRepost().getAuthor()})}"
+                                    th:text="${passiveUser.getRepost().getAuthor()}"></a></div>
+                        </div>
+                    </div>
+                    <div class="post-title ns-major"
+                         th:if="${passiveUser.getRepost().getTitle() !=null}"
+                         th:text="${passiveUser.getRepost().getTitle()}"></div>
+                    <div class="post-content ns-text" th:text="${passiveUser.getRepost().getContent()}"></div>
+                </div>
+                <div th:if="${!post.isRepost()}">
+                    <div class="post-title ns-major" th:if="${post.getTitle()!=null}"
+                         th:text="${post.getTitle()}"></div>
+                    <div class="post-content ns-text" th:text="${post.getContent()}"></div>
+                </div>
+
+                <div class="post-footer">
+                    <div class="post-date ns-text"><a href="#" th:text="${post.getDateAsString()}"></a></div>
+                    <div class="post-repost ns-text" th:if="${!post.isRepost()}"
+                         th:classappend="${post.getReposts().contains(activeUser)} ? 'reposted' : 'non-reposted' "
+                         th:id="'repostBtn'+${post.getPostId()}"><a href="#!"
+                                                                    th:onclick="'toggleRepost(' + ${post.getPostId()}+')'">
+                        <span th:utext="#{Text.Profile.Repost}"></span>
+                        <span th:id="'repostBtnSpan'+${post.getPostId()}" th:text="${post.getReposts().size()}"></span>
+                    </a></div>
+                    <div class="post-like ns-text"
+                         th:classappend="${post.getLikes().contains(activeUser)} ? 'liked' : 'non-liked' "
+                         th:id="'likeBtn'+${post.getPostId()}"><a href="#!"
+                                                                  th:onclick="'toggleLike('+${post.getPostId()}+')'">
+                        <span th:utext="#{Text.Profile.Like}"></span>
+                        <span th:id="'likeBtnSpan'+${post.getPostId()}" th:text="${post.getLikes().size()}"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

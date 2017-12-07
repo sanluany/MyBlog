@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="../../resources/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/custom.css"
+          th:href="@{/resources/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/font-awesome.css"
+          th:href="@{/resources/css/font-awesome.css}"/>
+    <title>Register</title>
+</head>
+<body>
+<div class="main-container">
+    <div class="panel-major register-container">
+        <form action="#" th:action="@{/register}" th:object="${user}" method="post">
+            <div class="ns-title textcolor-blue login-title" th:utext="#{Text.Registration.Registration}"></div>
+            <input type="text" class="input-text login-input" placeholder=" " required minlength="5" maxlength="20" th:errorclass="err-text-field" th:field="*{username}" th:placeholder ="#{Placeholder.User.Username}">
+
+            <input type="password" class="input-text login-input" placeholder=" " required minlength="8" maxlength="64" th:errorclass="err-text-field" th:field="*{password}" th:placeholder ="#{Placeholder.User.Password}" >
+            <input type="password" class="input-text login-input" placeholder=" " required minlength="8" maxlength="64" th:errorclass="err-text-field"
+                   th:field="*{passwordConfirmation}" th:placeholder ="#{Placeholder.User.PasswordConfirm}" >
+            <input type="email" class="input-text login-input" required placeholder=" "  minlength="3" maxlength="64" th:errorclass="err-text-field" th:field="*{email}" th:placeholder ="#{Placeholder.User.Email}" >
+            <div class="err err-register ns-minor" th:if="${#fields.hasAnyErrors()}" th:text="${#fields.errors().get(0)}">
+
+            </div>
+            <input type="submit" class="input-button login-input bgcolor-blue textcolor-white"
+                   th:value="#{Text.Login.Register}">
+        </form>
+    </div>
+</div>
+</body>
+</html>
